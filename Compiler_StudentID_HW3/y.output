@@ -1,0 +1,3680 @@
+Nonterminals useless in grammar
+
+   InitStmt
+   PostStmt
+   binary_op
+   cmp_op
+   add_op
+   mul_op
+
+
+Terminals unused in grammar
+
+   FUNCOPEN
+   '['
+   ']'
+   AND
+   OR
+
+
+Rules useless in grammar
+
+  137 InitStmt: SimpleStmt
+
+  138 PostStmt: SimpleStmt
+
+  139 binary_op: LOR
+  140          | LAND
+  141          | cmp_op
+  142          | add_op
+  143          | mul_op
+
+  144 cmp_op: EQL
+  145       | NEQ
+  146       | '<'
+  147       | LEQ
+  148       | '>'
+  149       | GEQ
+
+  150 add_op: '+'
+  151       | '-'
+
+  152 mul_op: '*'
+  153       | '/'
+  154       | '%'
+
+
+Rules useless in parser due to conflicts
+
+  135 ReturnStmt: RETURN
+
+
+State 36 conflicts: 27 shift/reduce, 24 reduce/reduce
+State 39 conflicts: 3 shift/reduce
+State 46 conflicts: 3 shift/reduce, 1 reduce/reduce
+State 56 conflicts: 3 shift/reduce
+State 59 conflicts: 4 shift/reduce
+State 83 conflicts: 3 shift/reduce
+State 94 conflicts: 3 shift/reduce
+State 98 conflicts: 3 shift/reduce
+State 100 conflicts: 27 shift/reduce, 24 reduce/reduce
+State 106 conflicts: 3 shift/reduce
+State 109 conflicts: 3 shift/reduce
+State 116 conflicts: 3 shift/reduce
+State 117 conflicts: 3 shift/reduce
+State 118 conflicts: 3 shift/reduce
+State 119 conflicts: 3 shift/reduce
+State 120 conflicts: 3 shift/reduce
+State 121 conflicts: 3 shift/reduce
+State 122 conflicts: 3 shift/reduce
+State 123 conflicts: 3 shift/reduce
+State 124 conflicts: 3 shift/reduce
+State 125 conflicts: 3 shift/reduce
+State 126 conflicts: 3 shift/reduce
+State 127 conflicts: 3 shift/reduce
+State 128 conflicts: 3 shift/reduce
+State 147 conflicts: 4 shift/reduce
+State 164 conflicts: 3 shift/reduce
+State 166 conflicts: 3 shift/reduce
+State 169 conflicts: 27 shift/reduce, 24 reduce/reduce
+State 189 conflicts: 4 shift/reduce
+State 203 conflicts: 3 shift/reduce
+State 211 conflicts: 3 shift/reduce
+
+
+Grammar
+
+    0 $accept: Program $end
+
+    1 Program: GlobalStatementList
+
+    2 GlobalStatementList: GlobalStatementList GlobalStatement
+    3                    | GlobalStatement
+
+    4 GlobalStatement: PackageStmt NEWLINE
+    5                | FunctionDeclStmt
+    6                | NEWLINE
+
+    7 PackageStmt: PACKAGE IDENT
+
+    8 $@1: %empty
+
+    9 FunctionDeclStmt: FUNC IDENT $@1 '(' ParameterList ')' ReturnType FuncBlock
+
+   10 ParameterList: IDENT Type
+   11              | ParameterList ',' IDENT Type
+   12              | %empty
+
+   13 ReturnType: INT
+   14           | FLOAT
+   15           | STRING
+   16           | BOOL
+   17           | CHAR
+   18           | %empty
+
+   19 $@2: %empty
+
+   20 FuncBlock: '{' $@2 StatementList '}'
+
+   21 StatementList: Statement
+   22              | StatementList Statement
+   23              | %empty
+
+   24 Statement: DeclarationStmt NEWLINE
+   25          | SimpleStmt NEWLINE
+   26          | Block
+   27          | IfStmt
+   28          | ForStmt
+   29          | SwitchStmt
+   30          | CaseStmt
+   31          | PrintStmt NEWLINE
+   32          | ReturnStmt NEWLINE
+   33          | UseFunction
+   34          | NEWLINE
+
+   35 DeclarationStmt: VAR IDENT Type
+   36                | VAR IDENT Type '=' Expression
+
+   37 SimpleStmt: AssignmentStmt
+   38           | Expression
+   39           | IncDecStmt
+
+   40 AssignmentStmt: Expression assign_op Expression
+
+   41 IncDecStmt: Expression INC
+   42           | Expression DEC
+
+   43 Type: INT
+   44     | FLOAT
+   45     | STRING
+   46     | BOOL
+   47     | CHAR
+   48     | %empty
+
+   49 UseFunction: IDENT '(' TrainsitParaList ')'
+
+   50 TrainsitParaList: TrainsitParaList ',' IDENT
+   51                 | TrainsitParaList ',' FLOAT_LIT
+   52                 | TrainsitParaList ',' CHAR_LIT
+   53                 | TrainsitParaList ',' INT_LIT
+   54                 | TrainsitParaList ',' BOOL_LIT
+   55                 | TrainsitParaList ',' '"' STRING_LIT '"'
+   56                 | IDENT
+   57                 | %empty
+
+   58 $@3: %empty
+
+   59 CaseStmt: CASE INT_LIT $@3 ':' Block
+
+   60 $@4: %empty
+
+   61 CaseStmt: CASE CHAR_LIT $@4 ':' Block
+
+   62 $@5: %empty
+
+   63 CaseStmt: DEFAULT $@5 ':' Block
+
+   64 $@6: %empty
+
+   65 SwitchStmt: SWITCH Operand $@6 Block
+
+   66 assign_op: '='
+   67          | ADD_ASSIGN
+   68          | SUB_ASSIGN
+   69          | MUL_ASSIGN
+   70          | QUO_ASSIGN
+   71          | REM_ASSIGN
+
+   72 Expression: Expression LOR Expression1
+   73           | Expression1
+
+   74 Expression1: Expression1 LAND Expression2
+   75            | Expression2
+
+   76 Expression2: Expression2 '<' Expression3
+   77            | Expression2 '>' Expression3
+   78            | Expression2 LEQ Expression3
+   79            | Expression2 GEQ Expression3
+   80            | Expression2 EQL Expression3
+   81            | Expression2 NEQ Expression3
+   82            | Expression3
+
+   83 Expression3: Expression3 '+' Expression4
+   84            | Expression3 '-' Expression4
+   85            | Expression4
+
+   86 Expression4: Expression4 '*' Expression5
+   87            | Expression4 '/' Expression5
+   88            | Expression4 '%' Expression5
+   89            | Expression5
+
+   90 Expression5: PrimaryExpr
+   91            | unary_op Expression5
+
+   92 PrimaryExpr: Operand
+   93            | ConversionExpr
+   94            | IndexExpr
+
+   95 Operand: Literal
+   96        | IDENT
+   97        | '(' Expression ')'
+
+   98 IndexExpr: TRUE
+   99          | FALSE
+  100          | %empty
+
+  101 Literal: INT_LIT
+  102        | FLOAT_LIT
+  103        | BOOL_LIT
+  104        | CHAR_LIT
+  105        | '"' STRING_LIT '"'
+
+  106 IfStmt: IF IfCondition IfBlock Else
+
+  107 IfCondition: Expression
+
+  108 IfBlock: IfBlockStart NEWLINE StatementList IfBlockEnd
+  109        | IfBlockStart IfBlockEnd
+
+  110 IfBlockStart: '{'
+
+  111 IfBlockEnd: '}'
+
+  112 Else: ELSE IfStmt
+  113     | ELSE Block
+
+  114 $@7: %empty
+
+  115 ForStmt: $@7 MulForStmt NEWLINE
+
+  116 $@8: %empty
+
+  117 MulForStmt: FOR $@8 for_condition
+
+  118 $@9: %empty
+
+  119 for_condition: Expression $@9 ForEnd
+
+  120 $@10: %empty
+
+  121 for_condition: ForClause $@10 ForEnd
+
+  122 ForEnd: Block
+
+  123 $@11: %empty
+
+  124 $@12: %empty
+
+  125 $@13: %empty
+
+  126 ForClause: SimpleStmt $@11 ';' Expression $@12 ';' $@13 SimpleStmt
+
+  127 ConversionExpr: Type '(' Expression ')'
+
+  128 unary_op: '+'
+  129         | '-'
+  130         | '!'
+
+  131 PrintStmt: PRINT '(' Expression ')'
+  132          | PRINTLN '(' Expression ')'
+
+  133 $@14: %empty
+
+  134 Block: '{' $@14 StatementList '}'
+
+  135 ReturnStmt: RETURN
+  136           | RETURN Expression
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'!' (33) 130
+'"' (34) 55 105
+'%' (37) 88
+'(' (40) 9 49 97 127 131 132
+')' (41) 9 49 97 127 131 132
+'*' (42) 86
+'+' (43) 83 128
+',' (44) 11 50 51 52 53 54 55
+'-' (45) 84 129
+'/' (47) 87
+':' (58) 59 61 63
+';' (59) 126
+'<' (60) 76
+'=' (61) 36 66
+'>' (62) 77
+'[' (91)
+']' (93)
+'{' (123) 20 110 134
+'}' (125) 20 111 134
+error (256)
+VAR (258) 35 36
+NEWLINE (259) 4 6 24 25 31 32 34 108 115
+INT (260) 13 43
+FLOAT (261) 14 44
+BOOL (262) 16 46
+STRING (263) 15 45
+CHAR (264) 17 47
+INC (265) 41
+DEC (266) 42
+GEQ (267) 79
+LOR (268) 72
+LAND (269) 74
+ADD_ASSIGN (270) 67
+SUB_ASSIGN (271) 68
+IF (272) 106
+ELSE (273) 112 113
+FOR (274) 117
+SWITCH (275) 65
+CASE (276) 59 61
+PRINT (277) 131
+TRUE (278) 98
+FALSE (279) 99
+DEFAULT (280) 63
+RETURN (281) 135 136
+FUNC (282) 9
+FUNCOPEN (283)
+PACKAGE (284) 7
+IDENT (285) 7 9 10 11 35 36 49 50 56 96
+EQL (286) 80
+NEQ (287) 81
+LEQ (288) 78
+MUL_ASSIGN (289) 69
+QUO_ASSIGN (290) 70
+REM_ASSIGN (291) 71
+PRINTLN (292) 132
+INT_LIT (293) 53 59 101
+STRING_LIT (294) 55 105
+FLOAT_LIT (295) 51 102
+BOOL_LIT (296) 54 103
+CHAR_LIT (297) 52 61 104
+AND (298)
+OR (299)
+
+
+Nonterminals, with rules where they appear
+
+$accept (64)
+    on left: 0
+Program (65)
+    on left: 1, on right: 0
+GlobalStatementList (66)
+    on left: 2 3, on right: 1 2
+GlobalStatement (67)
+    on left: 4 5 6, on right: 2 3
+PackageStmt (68)
+    on left: 7, on right: 4
+FunctionDeclStmt (69)
+    on left: 9, on right: 5
+$@1 (70)
+    on left: 8, on right: 9
+ParameterList (71)
+    on left: 10 11 12, on right: 9 11
+ReturnType (72)
+    on left: 13 14 15 16 17 18, on right: 9
+FuncBlock (73)
+    on left: 20, on right: 9
+$@2 (74)
+    on left: 19, on right: 20
+StatementList (75)
+    on left: 21 22 23, on right: 20 22 108 134
+Statement (76)
+    on left: 24 25 26 27 28 29 30 31 32 33 34, on right: 21 22
+DeclarationStmt (77)
+    on left: 35 36, on right: 24
+SimpleStmt (78)
+    on left: 37 38 39, on right: 25 126
+AssignmentStmt (79)
+    on left: 40, on right: 37
+IncDecStmt (80)
+    on left: 41 42, on right: 39
+Type (81)
+    on left: 43 44 45 46 47 48, on right: 10 11 35 36 127
+UseFunction (82)
+    on left: 49, on right: 33
+TrainsitParaList (83)
+    on left: 50 51 52 53 54 55 56 57, on right: 49 50 51 52 53 54 55
+CaseStmt (84)
+    on left: 59 61 63, on right: 30
+$@3 (85)
+    on left: 58, on right: 59
+$@4 (86)
+    on left: 60, on right: 61
+$@5 (87)
+    on left: 62, on right: 63
+SwitchStmt (88)
+    on left: 65, on right: 29
+$@6 (89)
+    on left: 64, on right: 65
+assign_op (90)
+    on left: 66 67 68 69 70 71, on right: 40
+Expression (91)
+    on left: 72 73, on right: 36 38 40 41 42 72 97 107 119 126 127
+    131 132 136
+Expression1 (92)
+    on left: 74 75, on right: 72 73 74
+Expression2 (93)
+    on left: 76 77 78 79 80 81 82, on right: 74 75 76 77 78 79 80 81
+Expression3 (94)
+    on left: 83 84 85, on right: 76 77 78 79 80 81 82 83 84
+Expression4 (95)
+    on left: 86 87 88 89, on right: 83 84 85 86 87 88
+Expression5 (96)
+    on left: 90 91, on right: 86 87 88 89 91
+PrimaryExpr (97)
+    on left: 92 93 94, on right: 90
+Operand (98)
+    on left: 95 96 97, on right: 65 92
+IndexExpr (99)
+    on left: 98 99 100, on right: 94
+Literal (100)
+    on left: 101 102 103 104 105, on right: 95
+IfStmt (101)
+    on left: 106, on right: 27 112
+IfCondition (102)
+    on left: 107, on right: 106
+IfBlock (103)
+    on left: 108 109, on right: 106
+IfBlockStart (104)
+    on left: 110, on right: 108 109
+IfBlockEnd (105)
+    on left: 111, on right: 108 109
+Else (106)
+    on left: 112 113, on right: 106
+ForStmt (107)
+    on left: 115, on right: 28
+$@7 (108)
+    on left: 114, on right: 115
+MulForStmt (109)
+    on left: 117, on right: 115
+$@8 (110)
+    on left: 116, on right: 117
+for_condition (111)
+    on left: 119 121, on right: 117
+$@9 (112)
+    on left: 118, on right: 119
+$@10 (113)
+    on left: 120, on right: 121
+ForEnd (114)
+    on left: 122, on right: 119 121
+ForClause (115)
+    on left: 126, on right: 121
+$@11 (116)
+    on left: 123, on right: 126
+$@12 (117)
+    on left: 124, on right: 126
+$@13 (118)
+    on left: 125, on right: 126
+ConversionExpr (119)
+    on left: 127, on right: 93
+unary_op (120)
+    on left: 128 129 130, on right: 91
+PrintStmt (121)
+    on left: 131 132, on right: 31
+Block (122)
+    on left: 134, on right: 26 59 61 63 65 113 122
+$@14 (123)
+    on left: 133, on right: 134
+ReturnStmt (124)
+    on left: 135 136, on right: 32
+
+
+State 0
+
+    0 $accept: . Program $end
+
+    NEWLINE  shift, and go to state 1
+    FUNC     shift, and go to state 2
+    PACKAGE  shift, and go to state 3
+
+    Program              go to state 4
+    GlobalStatementList  go to state 5
+    GlobalStatement      go to state 6
+    PackageStmt          go to state 7
+    FunctionDeclStmt     go to state 8
+
+
+State 1
+
+    6 GlobalStatement: NEWLINE .
+
+    $default  reduce using rule 6 (GlobalStatement)
+
+
+State 2
+
+    9 FunctionDeclStmt: FUNC . IDENT $@1 '(' ParameterList ')' ReturnType FuncBlock
+
+    IDENT  shift, and go to state 9
+
+
+State 3
+
+    7 PackageStmt: PACKAGE . IDENT
+
+    IDENT  shift, and go to state 10
+
+
+State 4
+
+    0 $accept: Program . $end
+
+    $end  shift, and go to state 11
+
+
+State 5
+
+    1 Program: GlobalStatementList .
+    2 GlobalStatementList: GlobalStatementList . GlobalStatement
+
+    NEWLINE  shift, and go to state 1
+    FUNC     shift, and go to state 2
+    PACKAGE  shift, and go to state 3
+
+    $default  reduce using rule 1 (Program)
+
+    GlobalStatement   go to state 12
+    PackageStmt       go to state 7
+    FunctionDeclStmt  go to state 8
+
+
+State 6
+
+    3 GlobalStatementList: GlobalStatement .
+
+    $default  reduce using rule 3 (GlobalStatementList)
+
+
+State 7
+
+    4 GlobalStatement: PackageStmt . NEWLINE
+
+    NEWLINE  shift, and go to state 13
+
+
+State 8
+
+    5 GlobalStatement: FunctionDeclStmt .
+
+    $default  reduce using rule 5 (GlobalStatement)
+
+
+State 9
+
+    9 FunctionDeclStmt: FUNC IDENT . $@1 '(' ParameterList ')' ReturnType FuncBlock
+
+    $default  reduce using rule 8 ($@1)
+
+    $@1  go to state 14
+
+
+State 10
+
+    7 PackageStmt: PACKAGE IDENT .
+
+    $default  reduce using rule 7 (PackageStmt)
+
+
+State 11
+
+    0 $accept: Program $end .
+
+    $default  accept
+
+
+State 12
+
+    2 GlobalStatementList: GlobalStatementList GlobalStatement .
+
+    $default  reduce using rule 2 (GlobalStatementList)
+
+
+State 13
+
+    4 GlobalStatement: PackageStmt NEWLINE .
+
+    $default  reduce using rule 4 (GlobalStatement)
+
+
+State 14
+
+    9 FunctionDeclStmt: FUNC IDENT $@1 . '(' ParameterList ')' ReturnType FuncBlock
+
+    '('  shift, and go to state 15
+
+
+State 15
+
+    9 FunctionDeclStmt: FUNC IDENT $@1 '(' . ParameterList ')' ReturnType FuncBlock
+
+    IDENT  shift, and go to state 16
+
+    $default  reduce using rule 12 (ParameterList)
+
+    ParameterList  go to state 17
+
+
+State 16
+
+   10 ParameterList: IDENT . Type
+
+    INT     shift, and go to state 18
+    FLOAT   shift, and go to state 19
+    BOOL    shift, and go to state 20
+    STRING  shift, and go to state 21
+    CHAR    shift, and go to state 22
+
+    $default  reduce using rule 48 (Type)
+
+    Type  go to state 23
+
+
+State 17
+
+    9 FunctionDeclStmt: FUNC IDENT $@1 '(' ParameterList . ')' ReturnType FuncBlock
+   11 ParameterList: ParameterList . ',' IDENT Type
+
+    ')'  shift, and go to state 24
+    ','  shift, and go to state 25
+
+
+State 18
+
+   43 Type: INT .
+
+    $default  reduce using rule 43 (Type)
+
+
+State 19
+
+   44 Type: FLOAT .
+
+    $default  reduce using rule 44 (Type)
+
+
+State 20
+
+   46 Type: BOOL .
+
+    $default  reduce using rule 46 (Type)
+
+
+State 21
+
+   45 Type: STRING .
+
+    $default  reduce using rule 45 (Type)
+
+
+State 22
+
+   47 Type: CHAR .
+
+    $default  reduce using rule 47 (Type)
+
+
+State 23
+
+   10 ParameterList: IDENT Type .
+
+    $default  reduce using rule 10 (ParameterList)
+
+
+State 24
+
+    9 FunctionDeclStmt: FUNC IDENT $@1 '(' ParameterList ')' . ReturnType FuncBlock
+
+    INT     shift, and go to state 26
+    FLOAT   shift, and go to state 27
+    BOOL    shift, and go to state 28
+    STRING  shift, and go to state 29
+    CHAR    shift, and go to state 30
+
+    $default  reduce using rule 18 (ReturnType)
+
+    ReturnType  go to state 31
+
+
+State 25
+
+   11 ParameterList: ParameterList ',' . IDENT Type
+
+    IDENT  shift, and go to state 32
+
+
+State 26
+
+   13 ReturnType: INT .
+
+    $default  reduce using rule 13 (ReturnType)
+
+
+State 27
+
+   14 ReturnType: FLOAT .
+
+    $default  reduce using rule 14 (ReturnType)
+
+
+State 28
+
+   16 ReturnType: BOOL .
+
+    $default  reduce using rule 16 (ReturnType)
+
+
+State 29
+
+   15 ReturnType: STRING .
+
+    $default  reduce using rule 15 (ReturnType)
+
+
+State 30
+
+   17 ReturnType: CHAR .
+
+    $default  reduce using rule 17 (ReturnType)
+
+
+State 31
+
+    9 FunctionDeclStmt: FUNC IDENT $@1 '(' ParameterList ')' ReturnType . FuncBlock
+
+    '{'  shift, and go to state 33
+
+    FuncBlock  go to state 34
+
+
+State 32
+
+   11 ParameterList: ParameterList ',' IDENT . Type
+
+    INT     shift, and go to state 18
+    FLOAT   shift, and go to state 19
+    BOOL    shift, and go to state 20
+    STRING  shift, and go to state 21
+    CHAR    shift, and go to state 22
+
+    $default  reduce using rule 48 (Type)
+
+    Type  go to state 35
+
+
+State 33
+
+   20 FuncBlock: '{' . $@2 StatementList '}'
+
+    $default  reduce using rule 19 ($@2)
+
+    $@2  go to state 36
+
+
+State 34
+
+    9 FunctionDeclStmt: FUNC IDENT $@1 '(' ParameterList ')' ReturnType FuncBlock .
+
+    $default  reduce using rule 9 (FunctionDeclStmt)
+
+
+State 35
+
+   11 ParameterList: ParameterList ',' IDENT Type .
+
+    $default  reduce using rule 11 (ParameterList)
+
+
+State 36
+
+   20 FuncBlock: '{' $@2 . StatementList '}'
+
+    VAR        shift, and go to state 37
+    NEWLINE    shift, and go to state 38
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    IF         shift, and go to state 39
+    SWITCH     shift, and go to state 40
+    CASE       shift, and go to state 41
+    PRINT      shift, and go to state 42
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    DEFAULT    shift, and go to state 45
+    RETURN     shift, and go to state 46
+    IDENT      shift, and go to state 47
+    PRINTLN    shift, and go to state 48
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '{'        shift, and go to state 57
+    '"'        shift, and go to state 58
+
+    VAR         [reduce using rule 23 (StatementList)]
+    NEWLINE     [reduce using rule 23 (StatementList)]
+    NEWLINE     [reduce using rule 100 (IndexExpr)]
+    INT         [reduce using rule 23 (StatementList)]
+    FLOAT       [reduce using rule 23 (StatementList)]
+    BOOL        [reduce using rule 23 (StatementList)]
+    STRING      [reduce using rule 23 (StatementList)]
+    CHAR        [reduce using rule 23 (StatementList)]
+    INC         reduce using rule 23 (StatementList)
+    INC         [reduce using rule 100 (IndexExpr)]
+    DEC         reduce using rule 23 (StatementList)
+    DEC         [reduce using rule 100 (IndexExpr)]
+    GEQ         reduce using rule 23 (StatementList)
+    GEQ         [reduce using rule 100 (IndexExpr)]
+    LOR         reduce using rule 23 (StatementList)
+    LOR         [reduce using rule 100 (IndexExpr)]
+    LAND        reduce using rule 23 (StatementList)
+    LAND        [reduce using rule 100 (IndexExpr)]
+    ADD_ASSIGN  reduce using rule 23 (StatementList)
+    ADD_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    SUB_ASSIGN  reduce using rule 23 (StatementList)
+    SUB_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    IF          [reduce using rule 23 (StatementList)]
+    FOR         reduce using rule 23 (StatementList)
+    FOR         [reduce using rule 114 ($@7)]
+    SWITCH      [reduce using rule 23 (StatementList)]
+    CASE        [reduce using rule 23 (StatementList)]
+    PRINT       [reduce using rule 23 (StatementList)]
+    TRUE        [reduce using rule 23 (StatementList)]
+    FALSE       [reduce using rule 23 (StatementList)]
+    DEFAULT     [reduce using rule 23 (StatementList)]
+    RETURN      [reduce using rule 23 (StatementList)]
+    IDENT       [reduce using rule 23 (StatementList)]
+    EQL         reduce using rule 23 (StatementList)
+    EQL         [reduce using rule 100 (IndexExpr)]
+    NEQ         reduce using rule 23 (StatementList)
+    NEQ         [reduce using rule 100 (IndexExpr)]
+    LEQ         reduce using rule 23 (StatementList)
+    LEQ         [reduce using rule 100 (IndexExpr)]
+    MUL_ASSIGN  reduce using rule 23 (StatementList)
+    MUL_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    QUO_ASSIGN  reduce using rule 23 (StatementList)
+    QUO_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    REM_ASSIGN  reduce using rule 23 (StatementList)
+    REM_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    PRINTLN     [reduce using rule 23 (StatementList)]
+    INT_LIT     [reduce using rule 23 (StatementList)]
+    FLOAT_LIT   [reduce using rule 23 (StatementList)]
+    BOOL_LIT    [reduce using rule 23 (StatementList)]
+    CHAR_LIT    [reduce using rule 23 (StatementList)]
+    '<'         reduce using rule 23 (StatementList)
+    '<'         [reduce using rule 100 (IndexExpr)]
+    '>'         reduce using rule 23 (StatementList)
+    '>'         [reduce using rule 100 (IndexExpr)]
+    '+'         [reduce using rule 23 (StatementList)]
+    '+'         [reduce using rule 100 (IndexExpr)]
+    '-'         [reduce using rule 23 (StatementList)]
+    '-'         [reduce using rule 100 (IndexExpr)]
+    '*'         reduce using rule 23 (StatementList)
+    '*'         [reduce using rule 100 (IndexExpr)]
+    '/'         reduce using rule 23 (StatementList)
+    '/'         [reduce using rule 100 (IndexExpr)]
+    '%'         reduce using rule 23 (StatementList)
+    '%'         [reduce using rule 100 (IndexExpr)]
+    '='         reduce using rule 23 (StatementList)
+    '='         [reduce using rule 100 (IndexExpr)]
+    '!'         [reduce using rule 23 (StatementList)]
+    '('         [reduce using rule 23 (StatementList)]
+    '('         [reduce using rule 48 (Type)]
+    '{'         [reduce using rule 23 (StatementList)]
+    '"'         [reduce using rule 23 (StatementList)]
+    $default    reduce using rule 23 (StatementList)
+
+    StatementList    go to state 59
+    Statement        go to state 60
+    DeclarationStmt  go to state 61
+    SimpleStmt       go to state 62
+    AssignmentStmt   go to state 63
+    IncDecStmt       go to state 64
+    Type             go to state 65
+    UseFunction      go to state 66
+    CaseStmt         go to state 67
+    SwitchStmt       go to state 68
+    Expression       go to state 69
+    Expression1      go to state 70
+    Expression2      go to state 71
+    Expression3      go to state 72
+    Expression4      go to state 73
+    Expression5      go to state 74
+    PrimaryExpr      go to state 75
+    Operand          go to state 76
+    IndexExpr        go to state 77
+    Literal          go to state 78
+    IfStmt           go to state 79
+    ForStmt          go to state 80
+    $@7              go to state 81
+    ConversionExpr   go to state 82
+    unary_op         go to state 83
+    PrintStmt        go to state 84
+    Block            go to state 85
+    ReturnStmt       go to state 86
+
+
+State 37
+
+   35 DeclarationStmt: VAR . IDENT Type
+   36                | VAR . IDENT Type '=' Expression
+
+    IDENT  shift, and go to state 87
+
+
+State 38
+
+   34 Statement: NEWLINE .
+
+    $default  reduce using rule 34 (Statement)
+
+
+State 39
+
+  106 IfStmt: IF . IfCondition IfBlock Else
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression      go to state 89
+    Expression1     go to state 70
+    Expression2     go to state 71
+    Expression3     go to state 72
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    IfCondition     go to state 90
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 40
+
+   65 SwitchStmt: SWITCH . Operand $@6 Block
+
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    Operand  go to state 91
+    Literal  go to state 78
+
+
+State 41
+
+   59 CaseStmt: CASE . INT_LIT $@3 ':' Block
+   61         | CASE . CHAR_LIT $@4 ':' Block
+
+    INT_LIT   shift, and go to state 92
+    CHAR_LIT  shift, and go to state 93
+
+
+State 42
+
+  131 PrintStmt: PRINT . '(' Expression ')'
+
+    '('  shift, and go to state 94
+
+
+State 43
+
+   98 IndexExpr: TRUE .
+
+    $default  reduce using rule 98 (IndexExpr)
+
+
+State 44
+
+   99 IndexExpr: FALSE .
+
+    $default  reduce using rule 99 (IndexExpr)
+
+
+State 45
+
+   63 CaseStmt: DEFAULT . $@5 ':' Block
+
+    $default  reduce using rule 62 ($@5)
+
+    $@5  go to state 95
+
+
+State 46
+
+  135 ReturnStmt: RETURN .
+  136           | RETURN . Expression
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    NEWLINE   reduce using rule 100 (IndexExpr)
+    NEWLINE   [reduce using rule 135 (ReturnStmt)]
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression      go to state 96
+    Expression1     go to state 70
+    Expression2     go to state 71
+    Expression3     go to state 72
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 47
+
+   49 UseFunction: IDENT . '(' TrainsitParaList ')'
+   96 Operand: IDENT .
+
+    '('  shift, and go to state 97
+
+    $default  reduce using rule 96 (Operand)
+
+
+State 48
+
+  132 PrintStmt: PRINTLN . '(' Expression ')'
+
+    '('  shift, and go to state 98
+
+
+State 49
+
+  101 Literal: INT_LIT .
+
+    $default  reduce using rule 101 (Literal)
+
+
+State 50
+
+  102 Literal: FLOAT_LIT .
+
+    $default  reduce using rule 102 (Literal)
+
+
+State 51
+
+  103 Literal: BOOL_LIT .
+
+    $default  reduce using rule 103 (Literal)
+
+
+State 52
+
+  104 Literal: CHAR_LIT .
+
+    $default  reduce using rule 104 (Literal)
+
+
+State 53
+
+  128 unary_op: '+' .
+
+    $default  reduce using rule 128 (unary_op)
+
+
+State 54
+
+  129 unary_op: '-' .
+
+    $default  reduce using rule 129 (unary_op)
+
+
+State 55
+
+  130 unary_op: '!' .
+
+    $default  reduce using rule 130 (unary_op)
+
+
+State 56
+
+   97 Operand: '(' . Expression ')'
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression      go to state 99
+    Expression1     go to state 70
+    Expression2     go to state 71
+    Expression3     go to state 72
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 57
+
+  134 Block: '{' . $@14 StatementList '}'
+
+    $default  reduce using rule 133 ($@14)
+
+    $@14  go to state 100
+
+
+State 58
+
+  105 Literal: '"' . STRING_LIT '"'
+
+    STRING_LIT  shift, and go to state 101
+
+
+State 59
+
+   20 FuncBlock: '{' $@2 StatementList . '}'
+   22 StatementList: StatementList . Statement
+
+    VAR        shift, and go to state 37
+    NEWLINE    shift, and go to state 38
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    IF         shift, and go to state 39
+    SWITCH     shift, and go to state 40
+    CASE       shift, and go to state 41
+    PRINT      shift, and go to state 42
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    DEFAULT    shift, and go to state 45
+    RETURN     shift, and go to state 46
+    IDENT      shift, and go to state 47
+    PRINTLN    shift, and go to state 48
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '{'        shift, and go to state 57
+    '}'        shift, and go to state 102
+    '"'        shift, and go to state 58
+
+    NEWLINE   [reduce using rule 100 (IndexExpr)]
+    FOR       reduce using rule 114 ($@7)
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Statement        go to state 103
+    DeclarationStmt  go to state 61
+    SimpleStmt       go to state 62
+    AssignmentStmt   go to state 63
+    IncDecStmt       go to state 64
+    Type             go to state 65
+    UseFunction      go to state 66
+    CaseStmt         go to state 67
+    SwitchStmt       go to state 68
+    Expression       go to state 69
+    Expression1      go to state 70
+    Expression2      go to state 71
+    Expression3      go to state 72
+    Expression4      go to state 73
+    Expression5      go to state 74
+    PrimaryExpr      go to state 75
+    Operand          go to state 76
+    IndexExpr        go to state 77
+    Literal          go to state 78
+    IfStmt           go to state 79
+    ForStmt          go to state 80
+    $@7              go to state 81
+    ConversionExpr   go to state 82
+    unary_op         go to state 83
+    PrintStmt        go to state 84
+    Block            go to state 85
+    ReturnStmt       go to state 86
+
+
+State 60
+
+   21 StatementList: Statement .
+
+    $default  reduce using rule 21 (StatementList)
+
+
+State 61
+
+   24 Statement: DeclarationStmt . NEWLINE
+
+    NEWLINE  shift, and go to state 104
+
+
+State 62
+
+   25 Statement: SimpleStmt . NEWLINE
+
+    NEWLINE  shift, and go to state 105
+
+
+State 63
+
+   37 SimpleStmt: AssignmentStmt .
+
+    $default  reduce using rule 37 (SimpleStmt)
+
+
+State 64
+
+   39 SimpleStmt: IncDecStmt .
+
+    $default  reduce using rule 39 (SimpleStmt)
+
+
+State 65
+
+  127 ConversionExpr: Type . '(' Expression ')'
+
+    '('  shift, and go to state 106
+
+
+State 66
+
+   33 Statement: UseFunction .
+
+    $default  reduce using rule 33 (Statement)
+
+
+State 67
+
+   30 Statement: CaseStmt .
+
+    $default  reduce using rule 30 (Statement)
+
+
+State 68
+
+   29 Statement: SwitchStmt .
+
+    $default  reduce using rule 29 (Statement)
+
+
+State 69
+
+   38 SimpleStmt: Expression .
+   40 AssignmentStmt: Expression . assign_op Expression
+   41 IncDecStmt: Expression . INC
+   42           | Expression . DEC
+   72 Expression: Expression . LOR Expression1
+
+    INC         shift, and go to state 107
+    DEC         shift, and go to state 108
+    LOR         shift, and go to state 109
+    ADD_ASSIGN  shift, and go to state 110
+    SUB_ASSIGN  shift, and go to state 111
+    MUL_ASSIGN  shift, and go to state 112
+    QUO_ASSIGN  shift, and go to state 113
+    REM_ASSIGN  shift, and go to state 114
+    '='         shift, and go to state 115
+
+    $default  reduce using rule 38 (SimpleStmt)
+
+    assign_op  go to state 116
+
+
+State 70
+
+   73 Expression: Expression1 .
+   74 Expression1: Expression1 . LAND Expression2
+
+    LAND  shift, and go to state 117
+
+    $default  reduce using rule 73 (Expression)
+
+
+State 71
+
+   75 Expression1: Expression2 .
+   76 Expression2: Expression2 . '<' Expression3
+   77            | Expression2 . '>' Expression3
+   78            | Expression2 . LEQ Expression3
+   79            | Expression2 . GEQ Expression3
+   80            | Expression2 . EQL Expression3
+   81            | Expression2 . NEQ Expression3
+
+    GEQ  shift, and go to state 118
+    EQL  shift, and go to state 119
+    NEQ  shift, and go to state 120
+    LEQ  shift, and go to state 121
+    '<'  shift, and go to state 122
+    '>'  shift, and go to state 123
+
+    $default  reduce using rule 75 (Expression1)
+
+
+State 72
+
+   82 Expression2: Expression3 .
+   83 Expression3: Expression3 . '+' Expression4
+   84            | Expression3 . '-' Expression4
+
+    '+'  shift, and go to state 124
+    '-'  shift, and go to state 125
+
+    $default  reduce using rule 82 (Expression2)
+
+
+State 73
+
+   85 Expression3: Expression4 .
+   86 Expression4: Expression4 . '*' Expression5
+   87            | Expression4 . '/' Expression5
+   88            | Expression4 . '%' Expression5
+
+    '*'  shift, and go to state 126
+    '/'  shift, and go to state 127
+    '%'  shift, and go to state 128
+
+    $default  reduce using rule 85 (Expression3)
+
+
+State 74
+
+   89 Expression4: Expression5 .
+
+    $default  reduce using rule 89 (Expression4)
+
+
+State 75
+
+   90 Expression5: PrimaryExpr .
+
+    $default  reduce using rule 90 (Expression5)
+
+
+State 76
+
+   92 PrimaryExpr: Operand .
+
+    $default  reduce using rule 92 (PrimaryExpr)
+
+
+State 77
+
+   94 PrimaryExpr: IndexExpr .
+
+    $default  reduce using rule 94 (PrimaryExpr)
+
+
+State 78
+
+   95 Operand: Literal .
+
+    $default  reduce using rule 95 (Operand)
+
+
+State 79
+
+   27 Statement: IfStmt .
+
+    $default  reduce using rule 27 (Statement)
+
+
+State 80
+
+   28 Statement: ForStmt .
+
+    $default  reduce using rule 28 (Statement)
+
+
+State 81
+
+  115 ForStmt: $@7 . MulForStmt NEWLINE
+
+    FOR  shift, and go to state 129
+
+    MulForStmt  go to state 130
+
+
+State 82
+
+   93 PrimaryExpr: ConversionExpr .
+
+    $default  reduce using rule 93 (PrimaryExpr)
+
+
+State 83
+
+   91 Expression5: unary_op . Expression5
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression5     go to state 131
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 84
+
+   31 Statement: PrintStmt . NEWLINE
+
+    NEWLINE  shift, and go to state 132
+
+
+State 85
+
+   26 Statement: Block .
+
+    $default  reduce using rule 26 (Statement)
+
+
+State 86
+
+   32 Statement: ReturnStmt . NEWLINE
+
+    NEWLINE  shift, and go to state 133
+
+
+State 87
+
+   35 DeclarationStmt: VAR IDENT . Type
+   36                | VAR IDENT . Type '=' Expression
+
+    INT     shift, and go to state 18
+    FLOAT   shift, and go to state 19
+    BOOL    shift, and go to state 20
+    STRING  shift, and go to state 21
+    CHAR    shift, and go to state 22
+
+    $default  reduce using rule 48 (Type)
+
+    Type  go to state 134
+
+
+State 88
+
+   96 Operand: IDENT .
+
+    $default  reduce using rule 96 (Operand)
+
+
+State 89
+
+   72 Expression: Expression . LOR Expression1
+  107 IfCondition: Expression .
+
+    LOR  shift, and go to state 109
+
+    $default  reduce using rule 107 (IfCondition)
+
+
+State 90
+
+  106 IfStmt: IF IfCondition . IfBlock Else
+
+    '{'  shift, and go to state 135
+
+    IfBlock       go to state 136
+    IfBlockStart  go to state 137
+
+
+State 91
+
+   65 SwitchStmt: SWITCH Operand . $@6 Block
+
+    $default  reduce using rule 64 ($@6)
+
+    $@6  go to state 138
+
+
+State 92
+
+   59 CaseStmt: CASE INT_LIT . $@3 ':' Block
+
+    $default  reduce using rule 58 ($@3)
+
+    $@3  go to state 139
+
+
+State 93
+
+   61 CaseStmt: CASE CHAR_LIT . $@4 ':' Block
+
+    $default  reduce using rule 60 ($@4)
+
+    $@4  go to state 140
+
+
+State 94
+
+  131 PrintStmt: PRINT '(' . Expression ')'
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression      go to state 141
+    Expression1     go to state 70
+    Expression2     go to state 71
+    Expression3     go to state 72
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 95
+
+   63 CaseStmt: DEFAULT $@5 . ':' Block
+
+    ':'  shift, and go to state 142
+
+
+State 96
+
+   72 Expression: Expression . LOR Expression1
+  136 ReturnStmt: RETURN Expression .
+
+    LOR  shift, and go to state 109
+
+    $default  reduce using rule 136 (ReturnStmt)
+
+
+State 97
+
+   49 UseFunction: IDENT '(' . TrainsitParaList ')'
+
+    IDENT  shift, and go to state 143
+
+    $default  reduce using rule 57 (TrainsitParaList)
+
+    TrainsitParaList  go to state 144
+
+
+State 98
+
+  132 PrintStmt: PRINTLN '(' . Expression ')'
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression      go to state 145
+    Expression1     go to state 70
+    Expression2     go to state 71
+    Expression3     go to state 72
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 99
+
+   72 Expression: Expression . LOR Expression1
+   97 Operand: '(' Expression . ')'
+
+    LOR  shift, and go to state 109
+    ')'  shift, and go to state 146
+
+
+State 100
+
+  134 Block: '{' $@14 . StatementList '}'
+
+    VAR        shift, and go to state 37
+    NEWLINE    shift, and go to state 38
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    IF         shift, and go to state 39
+    SWITCH     shift, and go to state 40
+    CASE       shift, and go to state 41
+    PRINT      shift, and go to state 42
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    DEFAULT    shift, and go to state 45
+    RETURN     shift, and go to state 46
+    IDENT      shift, and go to state 47
+    PRINTLN    shift, and go to state 48
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '{'        shift, and go to state 57
+    '"'        shift, and go to state 58
+
+    VAR         [reduce using rule 23 (StatementList)]
+    NEWLINE     [reduce using rule 23 (StatementList)]
+    NEWLINE     [reduce using rule 100 (IndexExpr)]
+    INT         [reduce using rule 23 (StatementList)]
+    FLOAT       [reduce using rule 23 (StatementList)]
+    BOOL        [reduce using rule 23 (StatementList)]
+    STRING      [reduce using rule 23 (StatementList)]
+    CHAR        [reduce using rule 23 (StatementList)]
+    INC         reduce using rule 23 (StatementList)
+    INC         [reduce using rule 100 (IndexExpr)]
+    DEC         reduce using rule 23 (StatementList)
+    DEC         [reduce using rule 100 (IndexExpr)]
+    GEQ         reduce using rule 23 (StatementList)
+    GEQ         [reduce using rule 100 (IndexExpr)]
+    LOR         reduce using rule 23 (StatementList)
+    LOR         [reduce using rule 100 (IndexExpr)]
+    LAND        reduce using rule 23 (StatementList)
+    LAND        [reduce using rule 100 (IndexExpr)]
+    ADD_ASSIGN  reduce using rule 23 (StatementList)
+    ADD_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    SUB_ASSIGN  reduce using rule 23 (StatementList)
+    SUB_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    IF          [reduce using rule 23 (StatementList)]
+    FOR         reduce using rule 23 (StatementList)
+    FOR         [reduce using rule 114 ($@7)]
+    SWITCH      [reduce using rule 23 (StatementList)]
+    CASE        [reduce using rule 23 (StatementList)]
+    PRINT       [reduce using rule 23 (StatementList)]
+    TRUE        [reduce using rule 23 (StatementList)]
+    FALSE       [reduce using rule 23 (StatementList)]
+    DEFAULT     [reduce using rule 23 (StatementList)]
+    RETURN      [reduce using rule 23 (StatementList)]
+    IDENT       [reduce using rule 23 (StatementList)]
+    EQL         reduce using rule 23 (StatementList)
+    EQL         [reduce using rule 100 (IndexExpr)]
+    NEQ         reduce using rule 23 (StatementList)
+    NEQ         [reduce using rule 100 (IndexExpr)]
+    LEQ         reduce using rule 23 (StatementList)
+    LEQ         [reduce using rule 100 (IndexExpr)]
+    MUL_ASSIGN  reduce using rule 23 (StatementList)
+    MUL_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    QUO_ASSIGN  reduce using rule 23 (StatementList)
+    QUO_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    REM_ASSIGN  reduce using rule 23 (StatementList)
+    REM_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    PRINTLN     [reduce using rule 23 (StatementList)]
+    INT_LIT     [reduce using rule 23 (StatementList)]
+    FLOAT_LIT   [reduce using rule 23 (StatementList)]
+    BOOL_LIT    [reduce using rule 23 (StatementList)]
+    CHAR_LIT    [reduce using rule 23 (StatementList)]
+    '<'         reduce using rule 23 (StatementList)
+    '<'         [reduce using rule 100 (IndexExpr)]
+    '>'         reduce using rule 23 (StatementList)
+    '>'         [reduce using rule 100 (IndexExpr)]
+    '+'         [reduce using rule 23 (StatementList)]
+    '+'         [reduce using rule 100 (IndexExpr)]
+    '-'         [reduce using rule 23 (StatementList)]
+    '-'         [reduce using rule 100 (IndexExpr)]
+    '*'         reduce using rule 23 (StatementList)
+    '*'         [reduce using rule 100 (IndexExpr)]
+    '/'         reduce using rule 23 (StatementList)
+    '/'         [reduce using rule 100 (IndexExpr)]
+    '%'         reduce using rule 23 (StatementList)
+    '%'         [reduce using rule 100 (IndexExpr)]
+    '='         reduce using rule 23 (StatementList)
+    '='         [reduce using rule 100 (IndexExpr)]
+    '!'         [reduce using rule 23 (StatementList)]
+    '('         [reduce using rule 23 (StatementList)]
+    '('         [reduce using rule 48 (Type)]
+    '{'         [reduce using rule 23 (StatementList)]
+    '"'         [reduce using rule 23 (StatementList)]
+    $default    reduce using rule 23 (StatementList)
+
+    StatementList    go to state 147
+    Statement        go to state 60
+    DeclarationStmt  go to state 61
+    SimpleStmt       go to state 62
+    AssignmentStmt   go to state 63
+    IncDecStmt       go to state 64
+    Type             go to state 65
+    UseFunction      go to state 66
+    CaseStmt         go to state 67
+    SwitchStmt       go to state 68
+    Expression       go to state 69
+    Expression1      go to state 70
+    Expression2      go to state 71
+    Expression3      go to state 72
+    Expression4      go to state 73
+    Expression5      go to state 74
+    PrimaryExpr      go to state 75
+    Operand          go to state 76
+    IndexExpr        go to state 77
+    Literal          go to state 78
+    IfStmt           go to state 79
+    ForStmt          go to state 80
+    $@7              go to state 81
+    ConversionExpr   go to state 82
+    unary_op         go to state 83
+    PrintStmt        go to state 84
+    Block            go to state 85
+    ReturnStmt       go to state 86
+
+
+State 101
+
+  105 Literal: '"' STRING_LIT . '"'
+
+    '"'  shift, and go to state 148
+
+
+State 102
+
+   20 FuncBlock: '{' $@2 StatementList '}' .
+
+    $default  reduce using rule 20 (FuncBlock)
+
+
+State 103
+
+   22 StatementList: StatementList Statement .
+
+    $default  reduce using rule 22 (StatementList)
+
+
+State 104
+
+   24 Statement: DeclarationStmt NEWLINE .
+
+    $default  reduce using rule 24 (Statement)
+
+
+State 105
+
+   25 Statement: SimpleStmt NEWLINE .
+
+    $default  reduce using rule 25 (Statement)
+
+
+State 106
+
+  127 ConversionExpr: Type '(' . Expression ')'
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression      go to state 149
+    Expression1     go to state 70
+    Expression2     go to state 71
+    Expression3     go to state 72
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 107
+
+   41 IncDecStmt: Expression INC .
+
+    $default  reduce using rule 41 (IncDecStmt)
+
+
+State 108
+
+   42 IncDecStmt: Expression DEC .
+
+    $default  reduce using rule 42 (IncDecStmt)
+
+
+State 109
+
+   72 Expression: Expression LOR . Expression1
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression1     go to state 150
+    Expression2     go to state 71
+    Expression3     go to state 72
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 110
+
+   67 assign_op: ADD_ASSIGN .
+
+    $default  reduce using rule 67 (assign_op)
+
+
+State 111
+
+   68 assign_op: SUB_ASSIGN .
+
+    $default  reduce using rule 68 (assign_op)
+
+
+State 112
+
+   69 assign_op: MUL_ASSIGN .
+
+    $default  reduce using rule 69 (assign_op)
+
+
+State 113
+
+   70 assign_op: QUO_ASSIGN .
+
+    $default  reduce using rule 70 (assign_op)
+
+
+State 114
+
+   71 assign_op: REM_ASSIGN .
+
+    $default  reduce using rule 71 (assign_op)
+
+
+State 115
+
+   66 assign_op: '=' .
+
+    $default  reduce using rule 66 (assign_op)
+
+
+State 116
+
+   40 AssignmentStmt: Expression assign_op . Expression
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression      go to state 151
+    Expression1     go to state 70
+    Expression2     go to state 71
+    Expression3     go to state 72
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 117
+
+   74 Expression1: Expression1 LAND . Expression2
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression2     go to state 152
+    Expression3     go to state 72
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 118
+
+   79 Expression2: Expression2 GEQ . Expression3
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression3     go to state 153
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 119
+
+   80 Expression2: Expression2 EQL . Expression3
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression3     go to state 154
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 120
+
+   81 Expression2: Expression2 NEQ . Expression3
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression3     go to state 155
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 121
+
+   78 Expression2: Expression2 LEQ . Expression3
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression3     go to state 156
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 122
+
+   76 Expression2: Expression2 '<' . Expression3
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression3     go to state 157
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 123
+
+   77 Expression2: Expression2 '>' . Expression3
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression3     go to state 158
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 124
+
+   83 Expression3: Expression3 '+' . Expression4
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression4     go to state 159
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 125
+
+   84 Expression3: Expression3 '-' . Expression4
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression4     go to state 160
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 126
+
+   86 Expression4: Expression4 '*' . Expression5
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression5     go to state 161
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 127
+
+   87 Expression4: Expression4 '/' . Expression5
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression5     go to state 162
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 128
+
+   88 Expression4: Expression4 '%' . Expression5
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression5     go to state 163
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 129
+
+  117 MulForStmt: FOR . $@8 for_condition
+
+    $default  reduce using rule 116 ($@8)
+
+    $@8  go to state 164
+
+
+State 130
+
+  115 ForStmt: $@7 MulForStmt . NEWLINE
+
+    NEWLINE  shift, and go to state 165
+
+
+State 131
+
+   91 Expression5: unary_op Expression5 .
+
+    $default  reduce using rule 91 (Expression5)
+
+
+State 132
+
+   31 Statement: PrintStmt NEWLINE .
+
+    $default  reduce using rule 31 (Statement)
+
+
+State 133
+
+   32 Statement: ReturnStmt NEWLINE .
+
+    $default  reduce using rule 32 (Statement)
+
+
+State 134
+
+   35 DeclarationStmt: VAR IDENT Type .
+   36                | VAR IDENT Type . '=' Expression
+
+    '='  shift, and go to state 166
+
+    $default  reduce using rule 35 (DeclarationStmt)
+
+
+State 135
+
+  110 IfBlockStart: '{' .
+
+    $default  reduce using rule 110 (IfBlockStart)
+
+
+State 136
+
+  106 IfStmt: IF IfCondition IfBlock . Else
+
+    ELSE  shift, and go to state 167
+
+    Else  go to state 168
+
+
+State 137
+
+  108 IfBlock: IfBlockStart . NEWLINE StatementList IfBlockEnd
+  109        | IfBlockStart . IfBlockEnd
+
+    NEWLINE  shift, and go to state 169
+    '}'      shift, and go to state 170
+
+    IfBlockEnd  go to state 171
+
+
+State 138
+
+   65 SwitchStmt: SWITCH Operand $@6 . Block
+
+    '{'  shift, and go to state 57
+
+    Block  go to state 172
+
+
+State 139
+
+   59 CaseStmt: CASE INT_LIT $@3 . ':' Block
+
+    ':'  shift, and go to state 173
+
+
+State 140
+
+   61 CaseStmt: CASE CHAR_LIT $@4 . ':' Block
+
+    ':'  shift, and go to state 174
+
+
+State 141
+
+   72 Expression: Expression . LOR Expression1
+  131 PrintStmt: PRINT '(' Expression . ')'
+
+    LOR  shift, and go to state 109
+    ')'  shift, and go to state 175
+
+
+State 142
+
+   63 CaseStmt: DEFAULT $@5 ':' . Block
+
+    '{'  shift, and go to state 57
+
+    Block  go to state 176
+
+
+State 143
+
+   56 TrainsitParaList: IDENT .
+
+    $default  reduce using rule 56 (TrainsitParaList)
+
+
+State 144
+
+   49 UseFunction: IDENT '(' TrainsitParaList . ')'
+   50 TrainsitParaList: TrainsitParaList . ',' IDENT
+   51                 | TrainsitParaList . ',' FLOAT_LIT
+   52                 | TrainsitParaList . ',' CHAR_LIT
+   53                 | TrainsitParaList . ',' INT_LIT
+   54                 | TrainsitParaList . ',' BOOL_LIT
+   55                 | TrainsitParaList . ',' '"' STRING_LIT '"'
+
+    ')'  shift, and go to state 177
+    ','  shift, and go to state 178
+
+
+State 145
+
+   72 Expression: Expression . LOR Expression1
+  132 PrintStmt: PRINTLN '(' Expression . ')'
+
+    LOR  shift, and go to state 109
+    ')'  shift, and go to state 179
+
+
+State 146
+
+   97 Operand: '(' Expression ')' .
+
+    $default  reduce using rule 97 (Operand)
+
+
+State 147
+
+   22 StatementList: StatementList . Statement
+  134 Block: '{' $@14 StatementList . '}'
+
+    VAR        shift, and go to state 37
+    NEWLINE    shift, and go to state 38
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    IF         shift, and go to state 39
+    SWITCH     shift, and go to state 40
+    CASE       shift, and go to state 41
+    PRINT      shift, and go to state 42
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    DEFAULT    shift, and go to state 45
+    RETURN     shift, and go to state 46
+    IDENT      shift, and go to state 47
+    PRINTLN    shift, and go to state 48
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '{'        shift, and go to state 57
+    '}'        shift, and go to state 180
+    '"'        shift, and go to state 58
+
+    NEWLINE   [reduce using rule 100 (IndexExpr)]
+    FOR       reduce using rule 114 ($@7)
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Statement        go to state 103
+    DeclarationStmt  go to state 61
+    SimpleStmt       go to state 62
+    AssignmentStmt   go to state 63
+    IncDecStmt       go to state 64
+    Type             go to state 65
+    UseFunction      go to state 66
+    CaseStmt         go to state 67
+    SwitchStmt       go to state 68
+    Expression       go to state 69
+    Expression1      go to state 70
+    Expression2      go to state 71
+    Expression3      go to state 72
+    Expression4      go to state 73
+    Expression5      go to state 74
+    PrimaryExpr      go to state 75
+    Operand          go to state 76
+    IndexExpr        go to state 77
+    Literal          go to state 78
+    IfStmt           go to state 79
+    ForStmt          go to state 80
+    $@7              go to state 81
+    ConversionExpr   go to state 82
+    unary_op         go to state 83
+    PrintStmt        go to state 84
+    Block            go to state 85
+    ReturnStmt       go to state 86
+
+
+State 148
+
+  105 Literal: '"' STRING_LIT '"' .
+
+    $default  reduce using rule 105 (Literal)
+
+
+State 149
+
+   72 Expression: Expression . LOR Expression1
+  127 ConversionExpr: Type '(' Expression . ')'
+
+    LOR  shift, and go to state 109
+    ')'  shift, and go to state 181
+
+
+State 150
+
+   72 Expression: Expression LOR Expression1 .
+   74 Expression1: Expression1 . LAND Expression2
+
+    LAND  shift, and go to state 117
+
+    $default  reduce using rule 72 (Expression)
+
+
+State 151
+
+   40 AssignmentStmt: Expression assign_op Expression .
+   72 Expression: Expression . LOR Expression1
+
+    LOR  shift, and go to state 109
+
+    $default  reduce using rule 40 (AssignmentStmt)
+
+
+State 152
+
+   74 Expression1: Expression1 LAND Expression2 .
+   76 Expression2: Expression2 . '<' Expression3
+   77            | Expression2 . '>' Expression3
+   78            | Expression2 . LEQ Expression3
+   79            | Expression2 . GEQ Expression3
+   80            | Expression2 . EQL Expression3
+   81            | Expression2 . NEQ Expression3
+
+    GEQ  shift, and go to state 118
+    EQL  shift, and go to state 119
+    NEQ  shift, and go to state 120
+    LEQ  shift, and go to state 121
+    '<'  shift, and go to state 122
+    '>'  shift, and go to state 123
+
+    $default  reduce using rule 74 (Expression1)
+
+
+State 153
+
+   79 Expression2: Expression2 GEQ Expression3 .
+   83 Expression3: Expression3 . '+' Expression4
+   84            | Expression3 . '-' Expression4
+
+    '+'  shift, and go to state 124
+    '-'  shift, and go to state 125
+
+    $default  reduce using rule 79 (Expression2)
+
+
+State 154
+
+   80 Expression2: Expression2 EQL Expression3 .
+   83 Expression3: Expression3 . '+' Expression4
+   84            | Expression3 . '-' Expression4
+
+    '+'  shift, and go to state 124
+    '-'  shift, and go to state 125
+
+    $default  reduce using rule 80 (Expression2)
+
+
+State 155
+
+   81 Expression2: Expression2 NEQ Expression3 .
+   83 Expression3: Expression3 . '+' Expression4
+   84            | Expression3 . '-' Expression4
+
+    '+'  shift, and go to state 124
+    '-'  shift, and go to state 125
+
+    $default  reduce using rule 81 (Expression2)
+
+
+State 156
+
+   78 Expression2: Expression2 LEQ Expression3 .
+   83 Expression3: Expression3 . '+' Expression4
+   84            | Expression3 . '-' Expression4
+
+    '+'  shift, and go to state 124
+    '-'  shift, and go to state 125
+
+    $default  reduce using rule 78 (Expression2)
+
+
+State 157
+
+   76 Expression2: Expression2 '<' Expression3 .
+   83 Expression3: Expression3 . '+' Expression4
+   84            | Expression3 . '-' Expression4
+
+    '+'  shift, and go to state 124
+    '-'  shift, and go to state 125
+
+    $default  reduce using rule 76 (Expression2)
+
+
+State 158
+
+   77 Expression2: Expression2 '>' Expression3 .
+   83 Expression3: Expression3 . '+' Expression4
+   84            | Expression3 . '-' Expression4
+
+    '+'  shift, and go to state 124
+    '-'  shift, and go to state 125
+
+    $default  reduce using rule 77 (Expression2)
+
+
+State 159
+
+   83 Expression3: Expression3 '+' Expression4 .
+   86 Expression4: Expression4 . '*' Expression5
+   87            | Expression4 . '/' Expression5
+   88            | Expression4 . '%' Expression5
+
+    '*'  shift, and go to state 126
+    '/'  shift, and go to state 127
+    '%'  shift, and go to state 128
+
+    $default  reduce using rule 83 (Expression3)
+
+
+State 160
+
+   84 Expression3: Expression3 '-' Expression4 .
+   86 Expression4: Expression4 . '*' Expression5
+   87            | Expression4 . '/' Expression5
+   88            | Expression4 . '%' Expression5
+
+    '*'  shift, and go to state 126
+    '/'  shift, and go to state 127
+    '%'  shift, and go to state 128
+
+    $default  reduce using rule 84 (Expression3)
+
+
+State 161
+
+   86 Expression4: Expression4 '*' Expression5 .
+
+    $default  reduce using rule 86 (Expression4)
+
+
+State 162
+
+   87 Expression4: Expression4 '/' Expression5 .
+
+    $default  reduce using rule 87 (Expression4)
+
+
+State 163
+
+   88 Expression4: Expression4 '%' Expression5 .
+
+    $default  reduce using rule 88 (Expression4)
+
+
+State 164
+
+  117 MulForStmt: FOR $@8 . for_condition
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    SimpleStmt      go to state 182
+    AssignmentStmt  go to state 63
+    IncDecStmt      go to state 64
+    Type            go to state 65
+    Expression      go to state 183
+    Expression1     go to state 70
+    Expression2     go to state 71
+    Expression3     go to state 72
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    for_condition   go to state 184
+    ForClause       go to state 185
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 165
+
+  115 ForStmt: $@7 MulForStmt NEWLINE .
+
+    $default  reduce using rule 115 (ForStmt)
+
+
+State 166
+
+   36 DeclarationStmt: VAR IDENT Type '=' . Expression
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression      go to state 186
+    Expression1     go to state 70
+    Expression2     go to state 71
+    Expression3     go to state 72
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 167
+
+  112 Else: ELSE . IfStmt
+  113     | ELSE . Block
+
+    IF   shift, and go to state 39
+    '{'  shift, and go to state 57
+
+    IfStmt  go to state 187
+    Block   go to state 188
+
+
+State 168
+
+  106 IfStmt: IF IfCondition IfBlock Else .
+
+    $default  reduce using rule 106 (IfStmt)
+
+
+State 169
+
+  108 IfBlock: IfBlockStart NEWLINE . StatementList IfBlockEnd
+
+    VAR        shift, and go to state 37
+    NEWLINE    shift, and go to state 38
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    IF         shift, and go to state 39
+    SWITCH     shift, and go to state 40
+    CASE       shift, and go to state 41
+    PRINT      shift, and go to state 42
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    DEFAULT    shift, and go to state 45
+    RETURN     shift, and go to state 46
+    IDENT      shift, and go to state 47
+    PRINTLN    shift, and go to state 48
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '{'        shift, and go to state 57
+    '"'        shift, and go to state 58
+
+    VAR         [reduce using rule 23 (StatementList)]
+    NEWLINE     [reduce using rule 23 (StatementList)]
+    NEWLINE     [reduce using rule 100 (IndexExpr)]
+    INT         [reduce using rule 23 (StatementList)]
+    FLOAT       [reduce using rule 23 (StatementList)]
+    BOOL        [reduce using rule 23 (StatementList)]
+    STRING      [reduce using rule 23 (StatementList)]
+    CHAR        [reduce using rule 23 (StatementList)]
+    INC         reduce using rule 23 (StatementList)
+    INC         [reduce using rule 100 (IndexExpr)]
+    DEC         reduce using rule 23 (StatementList)
+    DEC         [reduce using rule 100 (IndexExpr)]
+    GEQ         reduce using rule 23 (StatementList)
+    GEQ         [reduce using rule 100 (IndexExpr)]
+    LOR         reduce using rule 23 (StatementList)
+    LOR         [reduce using rule 100 (IndexExpr)]
+    LAND        reduce using rule 23 (StatementList)
+    LAND        [reduce using rule 100 (IndexExpr)]
+    ADD_ASSIGN  reduce using rule 23 (StatementList)
+    ADD_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    SUB_ASSIGN  reduce using rule 23 (StatementList)
+    SUB_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    IF          [reduce using rule 23 (StatementList)]
+    FOR         reduce using rule 23 (StatementList)
+    FOR         [reduce using rule 114 ($@7)]
+    SWITCH      [reduce using rule 23 (StatementList)]
+    CASE        [reduce using rule 23 (StatementList)]
+    PRINT       [reduce using rule 23 (StatementList)]
+    TRUE        [reduce using rule 23 (StatementList)]
+    FALSE       [reduce using rule 23 (StatementList)]
+    DEFAULT     [reduce using rule 23 (StatementList)]
+    RETURN      [reduce using rule 23 (StatementList)]
+    IDENT       [reduce using rule 23 (StatementList)]
+    EQL         reduce using rule 23 (StatementList)
+    EQL         [reduce using rule 100 (IndexExpr)]
+    NEQ         reduce using rule 23 (StatementList)
+    NEQ         [reduce using rule 100 (IndexExpr)]
+    LEQ         reduce using rule 23 (StatementList)
+    LEQ         [reduce using rule 100 (IndexExpr)]
+    MUL_ASSIGN  reduce using rule 23 (StatementList)
+    MUL_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    QUO_ASSIGN  reduce using rule 23 (StatementList)
+    QUO_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    REM_ASSIGN  reduce using rule 23 (StatementList)
+    REM_ASSIGN  [reduce using rule 100 (IndexExpr)]
+    PRINTLN     [reduce using rule 23 (StatementList)]
+    INT_LIT     [reduce using rule 23 (StatementList)]
+    FLOAT_LIT   [reduce using rule 23 (StatementList)]
+    BOOL_LIT    [reduce using rule 23 (StatementList)]
+    CHAR_LIT    [reduce using rule 23 (StatementList)]
+    '<'         reduce using rule 23 (StatementList)
+    '<'         [reduce using rule 100 (IndexExpr)]
+    '>'         reduce using rule 23 (StatementList)
+    '>'         [reduce using rule 100 (IndexExpr)]
+    '+'         [reduce using rule 23 (StatementList)]
+    '+'         [reduce using rule 100 (IndexExpr)]
+    '-'         [reduce using rule 23 (StatementList)]
+    '-'         [reduce using rule 100 (IndexExpr)]
+    '*'         reduce using rule 23 (StatementList)
+    '*'         [reduce using rule 100 (IndexExpr)]
+    '/'         reduce using rule 23 (StatementList)
+    '/'         [reduce using rule 100 (IndexExpr)]
+    '%'         reduce using rule 23 (StatementList)
+    '%'         [reduce using rule 100 (IndexExpr)]
+    '='         reduce using rule 23 (StatementList)
+    '='         [reduce using rule 100 (IndexExpr)]
+    '!'         [reduce using rule 23 (StatementList)]
+    '('         [reduce using rule 23 (StatementList)]
+    '('         [reduce using rule 48 (Type)]
+    '{'         [reduce using rule 23 (StatementList)]
+    '"'         [reduce using rule 23 (StatementList)]
+    $default    reduce using rule 23 (StatementList)
+
+    StatementList    go to state 189
+    Statement        go to state 60
+    DeclarationStmt  go to state 61
+    SimpleStmt       go to state 62
+    AssignmentStmt   go to state 63
+    IncDecStmt       go to state 64
+    Type             go to state 65
+    UseFunction      go to state 66
+    CaseStmt         go to state 67
+    SwitchStmt       go to state 68
+    Expression       go to state 69
+    Expression1      go to state 70
+    Expression2      go to state 71
+    Expression3      go to state 72
+    Expression4      go to state 73
+    Expression5      go to state 74
+    PrimaryExpr      go to state 75
+    Operand          go to state 76
+    IndexExpr        go to state 77
+    Literal          go to state 78
+    IfStmt           go to state 79
+    ForStmt          go to state 80
+    $@7              go to state 81
+    ConversionExpr   go to state 82
+    unary_op         go to state 83
+    PrintStmt        go to state 84
+    Block            go to state 85
+    ReturnStmt       go to state 86
+
+
+State 170
+
+  111 IfBlockEnd: '}' .
+
+    $default  reduce using rule 111 (IfBlockEnd)
+
+
+State 171
+
+  109 IfBlock: IfBlockStart IfBlockEnd .
+
+    $default  reduce using rule 109 (IfBlock)
+
+
+State 172
+
+   65 SwitchStmt: SWITCH Operand $@6 Block .
+
+    $default  reduce using rule 65 (SwitchStmt)
+
+
+State 173
+
+   59 CaseStmt: CASE INT_LIT $@3 ':' . Block
+
+    '{'  shift, and go to state 57
+
+    Block  go to state 190
+
+
+State 174
+
+   61 CaseStmt: CASE CHAR_LIT $@4 ':' . Block
+
+    '{'  shift, and go to state 57
+
+    Block  go to state 191
+
+
+State 175
+
+  131 PrintStmt: PRINT '(' Expression ')' .
+
+    $default  reduce using rule 131 (PrintStmt)
+
+
+State 176
+
+   63 CaseStmt: DEFAULT $@5 ':' Block .
+
+    $default  reduce using rule 63 (CaseStmt)
+
+
+State 177
+
+   49 UseFunction: IDENT '(' TrainsitParaList ')' .
+
+    $default  reduce using rule 49 (UseFunction)
+
+
+State 178
+
+   50 TrainsitParaList: TrainsitParaList ',' . IDENT
+   51                 | TrainsitParaList ',' . FLOAT_LIT
+   52                 | TrainsitParaList ',' . CHAR_LIT
+   53                 | TrainsitParaList ',' . INT_LIT
+   54                 | TrainsitParaList ',' . BOOL_LIT
+   55                 | TrainsitParaList ',' . '"' STRING_LIT '"'
+
+    IDENT      shift, and go to state 192
+    INT_LIT    shift, and go to state 193
+    FLOAT_LIT  shift, and go to state 194
+    BOOL_LIT   shift, and go to state 195
+    CHAR_LIT   shift, and go to state 196
+    '"'        shift, and go to state 197
+
+
+State 179
+
+  132 PrintStmt: PRINTLN '(' Expression ')' .
+
+    $default  reduce using rule 132 (PrintStmt)
+
+
+State 180
+
+  134 Block: '{' $@14 StatementList '}' .
+
+    $default  reduce using rule 134 (Block)
+
+
+State 181
+
+  127 ConversionExpr: Type '(' Expression ')' .
+
+    $default  reduce using rule 127 (ConversionExpr)
+
+
+State 182
+
+  126 ForClause: SimpleStmt . $@11 ';' Expression $@12 ';' $@13 SimpleStmt
+
+    $default  reduce using rule 123 ($@11)
+
+    $@11  go to state 198
+
+
+State 183
+
+   38 SimpleStmt: Expression .
+   40 AssignmentStmt: Expression . assign_op Expression
+   41 IncDecStmt: Expression . INC
+   42           | Expression . DEC
+   72 Expression: Expression . LOR Expression1
+  119 for_condition: Expression . $@9 ForEnd
+
+    INC         shift, and go to state 107
+    DEC         shift, and go to state 108
+    LOR         shift, and go to state 109
+    ADD_ASSIGN  shift, and go to state 110
+    SUB_ASSIGN  shift, and go to state 111
+    MUL_ASSIGN  shift, and go to state 112
+    QUO_ASSIGN  shift, and go to state 113
+    REM_ASSIGN  shift, and go to state 114
+    '='         shift, and go to state 115
+
+    '{'       reduce using rule 118 ($@9)
+    $default  reduce using rule 38 (SimpleStmt)
+
+    assign_op  go to state 116
+    $@9        go to state 199
+
+
+State 184
+
+  117 MulForStmt: FOR $@8 for_condition .
+
+    $default  reduce using rule 117 (MulForStmt)
+
+
+State 185
+
+  121 for_condition: ForClause . $@10 ForEnd
+
+    $default  reduce using rule 120 ($@10)
+
+    $@10  go to state 200
+
+
+State 186
+
+   36 DeclarationStmt: VAR IDENT Type '=' Expression .
+   72 Expression: Expression . LOR Expression1
+
+    LOR  shift, and go to state 109
+
+    $default  reduce using rule 36 (DeclarationStmt)
+
+
+State 187
+
+  112 Else: ELSE IfStmt .
+
+    $default  reduce using rule 112 (Else)
+
+
+State 188
+
+  113 Else: ELSE Block .
+
+    $default  reduce using rule 113 (Else)
+
+
+State 189
+
+   22 StatementList: StatementList . Statement
+  108 IfBlock: IfBlockStart NEWLINE StatementList . IfBlockEnd
+
+    VAR        shift, and go to state 37
+    NEWLINE    shift, and go to state 38
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    IF         shift, and go to state 39
+    SWITCH     shift, and go to state 40
+    CASE       shift, and go to state 41
+    PRINT      shift, and go to state 42
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    DEFAULT    shift, and go to state 45
+    RETURN     shift, and go to state 46
+    IDENT      shift, and go to state 47
+    PRINTLN    shift, and go to state 48
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '{'        shift, and go to state 57
+    '}'        shift, and go to state 170
+    '"'        shift, and go to state 58
+
+    NEWLINE   [reduce using rule 100 (IndexExpr)]
+    FOR       reduce using rule 114 ($@7)
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Statement        go to state 103
+    DeclarationStmt  go to state 61
+    SimpleStmt       go to state 62
+    AssignmentStmt   go to state 63
+    IncDecStmt       go to state 64
+    Type             go to state 65
+    UseFunction      go to state 66
+    CaseStmt         go to state 67
+    SwitchStmt       go to state 68
+    Expression       go to state 69
+    Expression1      go to state 70
+    Expression2      go to state 71
+    Expression3      go to state 72
+    Expression4      go to state 73
+    Expression5      go to state 74
+    PrimaryExpr      go to state 75
+    Operand          go to state 76
+    IndexExpr        go to state 77
+    Literal          go to state 78
+    IfStmt           go to state 79
+    IfBlockEnd       go to state 201
+    ForStmt          go to state 80
+    $@7              go to state 81
+    ConversionExpr   go to state 82
+    unary_op         go to state 83
+    PrintStmt        go to state 84
+    Block            go to state 85
+    ReturnStmt       go to state 86
+
+
+State 190
+
+   59 CaseStmt: CASE INT_LIT $@3 ':' Block .
+
+    $default  reduce using rule 59 (CaseStmt)
+
+
+State 191
+
+   61 CaseStmt: CASE CHAR_LIT $@4 ':' Block .
+
+    $default  reduce using rule 61 (CaseStmt)
+
+
+State 192
+
+   50 TrainsitParaList: TrainsitParaList ',' IDENT .
+
+    $default  reduce using rule 50 (TrainsitParaList)
+
+
+State 193
+
+   53 TrainsitParaList: TrainsitParaList ',' INT_LIT .
+
+    $default  reduce using rule 53 (TrainsitParaList)
+
+
+State 194
+
+   51 TrainsitParaList: TrainsitParaList ',' FLOAT_LIT .
+
+    $default  reduce using rule 51 (TrainsitParaList)
+
+
+State 195
+
+   54 TrainsitParaList: TrainsitParaList ',' BOOL_LIT .
+
+    $default  reduce using rule 54 (TrainsitParaList)
+
+
+State 196
+
+   52 TrainsitParaList: TrainsitParaList ',' CHAR_LIT .
+
+    $default  reduce using rule 52 (TrainsitParaList)
+
+
+State 197
+
+   55 TrainsitParaList: TrainsitParaList ',' '"' . STRING_LIT '"'
+
+    STRING_LIT  shift, and go to state 202
+
+
+State 198
+
+  126 ForClause: SimpleStmt $@11 . ';' Expression $@12 ';' $@13 SimpleStmt
+
+    ';'  shift, and go to state 203
+
+
+State 199
+
+  119 for_condition: Expression $@9 . ForEnd
+
+    '{'  shift, and go to state 57
+
+    ForEnd  go to state 204
+    Block   go to state 205
+
+
+State 200
+
+  121 for_condition: ForClause $@10 . ForEnd
+
+    '{'  shift, and go to state 57
+
+    ForEnd  go to state 206
+    Block   go to state 205
+
+
+State 201
+
+  108 IfBlock: IfBlockStart NEWLINE StatementList IfBlockEnd .
+
+    $default  reduce using rule 108 (IfBlock)
+
+
+State 202
+
+   55 TrainsitParaList: TrainsitParaList ',' '"' STRING_LIT . '"'
+
+    '"'  shift, and go to state 207
+
+
+State 203
+
+  126 ForClause: SimpleStmt $@11 ';' . Expression $@12 ';' $@13 SimpleStmt
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    Type            go to state 65
+    Expression      go to state 208
+    Expression1     go to state 70
+    Expression2     go to state 71
+    Expression3     go to state 72
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 204
+
+  119 for_condition: Expression $@9 ForEnd .
+
+    $default  reduce using rule 119 (for_condition)
+
+
+State 205
+
+  122 ForEnd: Block .
+
+    $default  reduce using rule 122 (ForEnd)
+
+
+State 206
+
+  121 for_condition: ForClause $@10 ForEnd .
+
+    $default  reduce using rule 121 (for_condition)
+
+
+State 207
+
+   55 TrainsitParaList: TrainsitParaList ',' '"' STRING_LIT '"' .
+
+    $default  reduce using rule 55 (TrainsitParaList)
+
+
+State 208
+
+   72 Expression: Expression . LOR Expression1
+  126 ForClause: SimpleStmt $@11 ';' Expression . $@12 ';' $@13 SimpleStmt
+
+    LOR  shift, and go to state 109
+
+    $default  reduce using rule 124 ($@12)
+
+    $@12  go to state 209
+
+
+State 209
+
+  126 ForClause: SimpleStmt $@11 ';' Expression $@12 . ';' $@13 SimpleStmt
+
+    ';'  shift, and go to state 210
+
+
+State 210
+
+  126 ForClause: SimpleStmt $@11 ';' Expression $@12 ';' . $@13 SimpleStmt
+
+    $default  reduce using rule 125 ($@13)
+
+    $@13  go to state 211
+
+
+State 211
+
+  126 ForClause: SimpleStmt $@11 ';' Expression $@12 ';' $@13 . SimpleStmt
+
+    INT        shift, and go to state 18
+    FLOAT      shift, and go to state 19
+    BOOL       shift, and go to state 20
+    STRING     shift, and go to state 21
+    CHAR       shift, and go to state 22
+    TRUE       shift, and go to state 43
+    FALSE      shift, and go to state 44
+    IDENT      shift, and go to state 88
+    INT_LIT    shift, and go to state 49
+    FLOAT_LIT  shift, and go to state 50
+    BOOL_LIT   shift, and go to state 51
+    CHAR_LIT   shift, and go to state 52
+    '+'        shift, and go to state 53
+    '-'        shift, and go to state 54
+    '!'        shift, and go to state 55
+    '('        shift, and go to state 56
+    '"'        shift, and go to state 58
+
+    '+'       [reduce using rule 100 (IndexExpr)]
+    '-'       [reduce using rule 100 (IndexExpr)]
+    '('       [reduce using rule 48 (Type)]
+    $default  reduce using rule 100 (IndexExpr)
+
+    SimpleStmt      go to state 212
+    AssignmentStmt  go to state 63
+    IncDecStmt      go to state 64
+    Type            go to state 65
+    Expression      go to state 69
+    Expression1     go to state 70
+    Expression2     go to state 71
+    Expression3     go to state 72
+    Expression4     go to state 73
+    Expression5     go to state 74
+    PrimaryExpr     go to state 75
+    Operand         go to state 76
+    IndexExpr       go to state 77
+    Literal         go to state 78
+    ConversionExpr  go to state 82
+    unary_op        go to state 83
+
+
+State 212
+
+  126 ForClause: SimpleStmt $@11 ';' Expression $@12 ';' $@13 SimpleStmt .
+
+    $default  reduce using rule 126 (ForClause)
